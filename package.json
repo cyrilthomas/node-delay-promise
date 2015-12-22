@@ -1,0 +1,27 @@
+{
+  "name": "promise-throttle",
+  "version": "1.0.0",
+  "description": "A bluebird promise wrapper library to allow throttling of promises",
+  "main": "index.js",
+  "dependencies": {
+    "bluebird": "^3.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "tests/test.js"
+  },
+  "keywords": [
+    "promise",
+    "throttle"
+  ],
+  "author": "Cyril Thomas George",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyrilthomas/promise-throttle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cyrilthomas/promise-throttle/issues"
+  },
+  "homepage": "https://github.com/cyrilthomas/promise-throttle#readme"
+}
