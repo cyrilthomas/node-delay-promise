@@ -1,11 +1,11 @@
-var Promise = require('./index');
+var Promise = require('delay-promise');
 
 var getDate = function() {
     return new Date().toJSON();
 };
 
 var runAsync = function(name, delay) {
-    const deferred = Promise.defer();
+    var deferred = Promise.defer();
     console.log('Triggered Async ' + name, getDate());
     setTimeout(function() {
         console.log('Running Async ' + name + ' after delay ' + delay, getDate());
@@ -21,7 +21,7 @@ Promise.Series([
     Promise.Creator(runAsync, 'Series B', 4000),
     Promise.Creator(runAsync, 'Series C', 3000)
 ], 1000).done(function() {
-    const end = new Date();
+    var end = new Date();
     console.log('Series total time', end - start);
 });
 

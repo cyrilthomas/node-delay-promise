@@ -1,9 +1,9 @@
-## Promose throttle
+## Delay promise
 
-A bluebird promise wrapper library to allow throttling of promises
+A bluebird promise wrapper library to delay of promises as series or parallel
 
 ```javascript
-var Promise = require('promise-throttle');
+var Promise = require('delay-promise');
 
 var getDate = function() {
     return new Date().toJSON();

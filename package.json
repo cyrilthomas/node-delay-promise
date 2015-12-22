@@ -1,14 +1,14 @@
 {
-  "name": "promise-throttle",
+  "name": "delay-promise",
   "version": "1.0.0",
-  "description": "A bluebird promise wrapper library to allow throttling of promises",
+  "description": "A bluebird promise wrapper library to delay of promises as series or parallel",
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.1.1"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "tests/test.js"
+    "test": "test.js"
   },
   "keywords": [
     "promise",
@@ -18,10 +18,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cyrilthomas/promise-throttle.git"
+    "url": "git+https://github.com/cyrilthomas/delay-promise.git"
   },
   "bugs": {
-    "url": "https://github.com/cyrilthomas/promise-throttle/issues"
+    "url": "https://github.com/cyrilthomas/delay-promise/issues"
   },
-  "homepage": "https://github.com/cyrilthomas/promise-throttle#readme"
+  "homepage": "https://github.com/cyrilthomas/delay-promise#readme"
 }
