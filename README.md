@@ -1,6 +1,6 @@
 ## Delay promise
 
-A bluebird promise wrapper library to delay of promises as series or parallel
+A bluebird promise wrapper library to delay promises as series or parallel
 
 ```javascript
 var Promise = require('delay-promise');
