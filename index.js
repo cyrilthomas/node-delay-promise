@@ -6,7 +6,7 @@ var delayedPromise = function(promiseCreator, ms) {
     });
 };
 
-Promise.Creator = function() {
+creator = function() {
     var slice = [].slice;
     var asyncFunc = arguments[0];
     var asyncFuncParams = 2 <= arguments.length ? slice.call(arguments, 1) : [];
@@ -16,7 +16,7 @@ Promise.Creator = function() {
     };
 };
 
-Promise.Series = function(promiseCreatorArray, delay, delayFirst) {
+series = function(promiseCreatorArray, delay, delayFirst) {
     delay = delay ? delay : 0;
     delayFirst = delayFirst ? delayFirst : false;
 
@@ -36,7 +36,7 @@ Promise.Series = function(promiseCreatorArray, delay, delayFirst) {
     });
 };
 
-Promise.Parallel = function(promiseCreatorArray, delay, delayFirst) {
+parallel = function(promiseCreatorArray, delay, delayFirst) {
     delay = delay ? delay : 0;
     delayFirst = delayFirst ? delayFirst : false;
 
@@ -56,4 +56,8 @@ Promise.Parallel = function(promiseCreatorArray, delay, delayFirst) {
     return Promise.all(promises);
 };
 
-module.exports = Promise;
+module.exports = {
+    creator: creator,
+    series: series,
+    parallel: parallel
+};

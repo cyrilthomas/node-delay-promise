@@ -1,36 +1,22 @@
-var Promise = require('delay-promise');
+var Promise = require('bluebird');
+var series = require('./series');
+var parallel = require('./parallel');
+var batch = require('./batch');
 
-var getDate = function() {
-    return new Date().toJSON();
+// A sample promise which takes an argument
+function promise(name) {
+    console.log('Begin task', name);
+    return new Promise(function(resolve, reject) {
+        setTimeout(function() {
+            console.log('Finish task', name);
+            return resolve();
+        }, 1000);
+    });
 };
 
-var runAsync = function(name, delay) {
-    var deferred = Promise.defer();
-    console.log('Triggered Async ' + name, getDate());
-    setTimeout(function() {
-        console.log('Running Async ' + name + ' after delay ' + delay, getDate());
-        return deferred.resolve(name);
-    }, delay);
-    return deferred.promise;
-};
-
-var start;
-start = new Date();
-Promise.Series([
-    Promise.Creator(runAsync, 'Series A', 5000),
-    Promise.Creator(runAsync, 'Series B', 4000),
-    Promise.Creator(runAsync, 'Series C', 3000)
-], 1000).done(function() {
-    var end = new Date();
-    console.log('Series total time', end - start);
-});
-
-start = new Date();
-Promise.Parallel([
-    Promise.Creator(runAsync, 'Parallel A', 5000),
-    Promise.Creator(runAsync, 'Parallel B', 4000),
-    Promise.Creator(runAsync, 'Parallel C', 3000)
-], 1000).done(function() {
-    var end = new Date();
-    console.log('Parallel total time', end - start);
+// Let's dance
+series(promise).then(function() {
+   return parallel(promise);
+}).then(function() {
+    return batch(promise);
 });

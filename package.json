@@ -1,14 +1,14 @@
 {
   "name": "delay-promise",
-  "version": "1.0.0",
-  "description": "A bluebird promise wrapper library to delay of promises as series or parallel",
+  "version": "2.0.0",
+  "description": "A bluebird promise wrapper library to throttle and batch promises",
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.1.1"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "test.js"
+    "test": "node tests/test.js"
   },
   "keywords": [
     "promise",

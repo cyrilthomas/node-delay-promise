@@ -1,96 +1,64 @@
 ## Delay promise
-
-A bluebird promise wrapper library to delay promises as series or parallel
-
+A bluebird promise wrapper library to throttle and batch promises
 ```javascript
-var Promise = require('delay-promise');
+var Promise = require('bluebird');
+var delayed = require('delay-promise');
 
-var getDate = function() {
-    return new Date().toJSON();
+// A sample promise which takes an argument
+function promise(name) {
+    console.log('Begin task', name);
+    return new Promise(function(resolve, reject) {
+        setTimeout(function() {
+            console.log('Finish task', name);
+            return resolve();
+        }, 1000);
+    });
 };
+```
+`delayed.creator` creates a wrapper function the promise which allows the delaying of the promise execution
+```javascript
+var promiseCreator = delayed.creator(promise, 'promise param');
+```
+Both `delayed.series` and `delayed.parallel` accepts an array of `delayed.creator` objects
 
-// Async promise function
-var runAsyncTask = function(name, runtime) {
-    console.log('Begin task ' + name, getDate());
-    const deferred = Promise.defer();
-    setTimeout(function() {
-        console.log('Finish task ' + name + ' after ' + runtime, getDate());
-        return deferred.resolve(name);
-    }, runtime);
-    return deferred.promise;
-};
-
-var start;
-
-// Create sequential tasks with a delay of 1 second between each task
-start = new Date();
-Promise.Series([
-    Promise.Creator(runAsyncTask, 'Series A', 5000),
-    Promise.Creator(runAsyncTask, 'Series B', 4000),
-    Promise.Creator(runAsyncTask, 'Series C', 3000)
+Sequentially execute an array of `delayed creators` with the delay of 1 second between each promise
+```javascript
+delayed.series([
+    delayed.creator(promise, 'Series A'),
+    delayed.creator(promise, 'Series B'),
+    delayed.creator(promise, 'Series C')
 ], 1000).done(function(promisesArray) {
-    const end = new Date();
-    console.log('Total time (series) -', end - start, promisesArray);
+    // returns an array of resolved values of the promises just like Promise.all
 });
+```
+To produce a throttled or staggered effect use `delayed.parallel`
 
-// Create parallel tasks with a delay of 1 second between each task
-start = new Date();
-Promise.Parallel([
-    Promise.Creator(runAsyncTask, 'Parallel A', 5000),
-    Promise.Creator(runAsyncTask, 'Parallel B', 4000),
-    Promise.Creator(runAsyncTask, 'Parallel C', 3000)
+Parallelly execute an array of `delayed creators` with the delay of 1 second between each promise
+```javascript
+delayed.parallel([
+    delayed.creator(promise, 'Parallel A'),
+    delayed.creator(promise, 'Parallel B'),
+    delayed.creator(promise, 'Parallel C')
 ], 1000).done(function(promisesArray) {
-    var end = new Date();
-    console.log('Total time (parallel) -', end - start, promisesArray);
+    // returns an array of resolved values of the promises just like Promise.all
 });
-
 ```
-
-Both `Promise.Series` and `Promise.Parallel` accepts an array of `Promise.Creator` objects
-
-`Promise.Creator` is a shorthand to
-
+Use both `parallel` and `series` for throttling and batching
 ```javascript
-// Function wrapper
-function() {
-    // return a promise
-    return runAsyncTask('Series A', 5000);
-}
+var batch1 = delayed.creator(delayed.parallel, [
+    delayed.creator(promise, 'batch task1'),
+    delayed.creator(promise, 'batch task2'),
+    delayed.creator(promise, 'batch task3')
+], 1000); // 1 second delay between each parallel promise
 
-```
+var batch2 = delayed.creator(delayed.parallel, [
+    delayed.creator(promise, 'batch task4'),
+    delayed.creator(promise, 'batch task5'),
+    delayed.creator(promise, 'batch task6')
+], 1000); // 1 second delay between each parallel promise
 
-Or better written cleaner as
-
-```javascript
-Promise.Creator(runAsyncTask, 'Parallel A', 5000)
-
-```
-
-
-Batch promises using `Series` and `Parallel`
-
-```javascript
-// Create batches of async tasks
-var batch1 = [
-    Promise.Creator(runAsyncTask, 'task1', 1000),
-    Promise.Creator(runAsyncTask, 'task2', 1000),
-    Promise.Creator(runAsyncTask, 'task3', 1000)
-]
-
-var batch2 = [
-    Promise.Creator(runAsyncTask, 'task4', 1000),
-    Promise.Creator(runAsyncTask, 'task5', 1000),
-    Promise.Creator(runAsyncTask, 'task6', 1000)
-]
-
-// run all tasks in a batch parallel with a delay of 2 seconds between batches
-Promise.Series([
-    Promise.Creator(Promise.Parallel, batch1),
-    Promise.Creator(Promise.Parallel, batch2)
-], 2000).then(function(batchArray) {
-    console.log('Processed 2 batches', batchArray);
-    // batchArray[0][0] = task1
-    // batchArray[1][0] = task4
+// 1 second delay between each batch
+delayed.series([ batch1, batch2 ], 1000).then(function(batchArray) {
+    // Array of batches
 });
-
 ```
