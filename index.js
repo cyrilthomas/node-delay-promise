@@ -2,12 +2,12 @@ const Promise = require('bluebird');
 
 const delayedPromise = (promiseCreator, ms) => Promise.delay(ms).then(() => promiseCreator());
 
-const creator = () => {
+function creator(...args) {
   const slice = [].slice;
-  var asyncFunc = arguments[0];
-  const asyncFuncParams = (arguments.length >= 2) ? slice.call(arguments, 1) : [];
-  return () => asyncFunc.apply(null, asyncFuncParams);
-};
+  const asyncFunc = args[0];
+  const asyncFuncParams = (arguments.length >= 2) ? slice.call(args, 1) : [];
+  return () => asyncFunc(...asyncFuncParams);
+}
 
 const series = (promiseCreatorArray, delay = 0, delayFirst = false) => {
   let chain = delayedPromise(promiseCreatorArray.shift(), delayFirst ? delay : 0);
