@@ -1,63 +1,48 @@
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
-var delayedPromise = function(promiseCreator, ms) {
-    return Promise.delay(ms).then(function() {
-        return promiseCreator(); // creates the promise
+const delayedPromise = (promiseCreator, ms) => Promise.delay(ms).then(() => promiseCreator());
+
+function creator(...args) {
+  const slice = [].slice;
+  const asyncFunc = args[0];
+  const asyncFuncParams = (arguments.length >= 2) ? slice.call(args, 1) : [];
+  return () => asyncFunc(...asyncFuncParams);
+}
+
+const series = (promiseCreatorArray, delay = 0, delayFirst = false) => {
+  let chain = delayedPromise(promiseCreatorArray.shift(), delayFirst ? delay : 0);
+  const values = [];
+
+  promiseCreatorArray.forEach((promiseCreator) => {
+    chain = chain.then((value) => {
+      values.push(value); // push the previous chain result
+      return delayedPromise(promiseCreator, delay);
     });
+  });
+
+  return chain.then((value) => {
+    values.push(value); // push the last chain result
+    return values;
+  });
 };
 
-creator = function() {
-    var slice = [].slice;
-    var asyncFunc = arguments[0];
-    var asyncFuncParams = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+const parallel = (promiseCreatorArray, delay = 0, delayFirst = false) => {
+  let currentDelay = delay;
+  const promises = [
+    delayedPromise(promiseCreatorArray.shift(), delayFirst ? currentDelay : 0),
+  ];
 
-    return function() {
-        return asyncFunc.apply(null, asyncFuncParams);
-    };
-};
-
-series = function(promiseCreatorArray, delay, delayFirst) {
-    delay = delay ? delay : 0;
-    delayFirst = delayFirst ? delayFirst : false;
-
-    var chain = delayedPromise(promiseCreatorArray.shift(), delayFirst ? delay : 0);
-    var values = [];
-
-    promiseCreatorArray.forEach(function(promiseCreator) {
-        chain = chain.then(function(value) {
-            values.push(value); // push the previous chain result
-            return delayedPromise(promiseCreator, delay);
-        });
-    });
-
-    return chain.then(function(value) {
-        values.push(value); // push the last chain result
-        return values;
-    });
-};
-
-parallel = function(promiseCreatorArray, delay, delayFirst) {
-    delay = delay ? delay : 0;
-    delayFirst = delayFirst ? delayFirst : false;
-
-    var currentDelay = delay;
-    var promises = [
-        delayedPromise(promiseCreatorArray.shift(), delayFirst ? currentDelay : 0)
-    ];
-
-    currentDelay = delayFirst ? currentDelay + delay : currentDelay;
-
-    promiseCreatorArray.forEach(function(promiseCreator) {
-        promises.push(delayedPromise(promiseCreator, currentDelay));
-        currentDelay += delay;
-        return;
-    });
-
-    return Promise.all(promises);
+  currentDelay = delayFirst ? currentDelay + delay : currentDelay;
+  promiseCreatorArray.forEach((promiseCreator) => {
+    promises.push(delayedPromise(promiseCreator, currentDelay));
+    currentDelay += delay;
+    return;
+  });
+  return Promise.all(promises);
 };
 
 module.exports = {
-    creator: creator,
-    series: series,
-    parallel: parallel
+  creator,
+  series,
+  parallel,
 };
