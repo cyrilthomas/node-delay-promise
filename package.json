@@ -3,9 +3,6 @@
     "version": "2.0.0",
     "description": "A bluebird promise wrapper library to throttle and batch promises",
     "main": "lib/index.js",
-    "dependencies": {
-        "bluebird": "^3.1.1"
-    },
     "devDependencies": {
         "babel-cli": "^6.18.0",
         "babel-core": "^6.18.0",
